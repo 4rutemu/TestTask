@@ -18,7 +18,6 @@
 
         if(res.ok){
             return await res.json().then((res) => {
-                console.log(res.rates)
                 coef = res.rates[secondCurrency.name];
             });
         } else {
@@ -57,12 +56,11 @@
             {/each}
         </select>
         <input type="number" bind:value={firstCurrency.value}
-               on:change={() => {
+               on:input={() => {
                    changeSecondCurrencyData()
                }
                }
         />
-        <p>{firstCurrency.value}</p>
     </div>
     <div>
         <select bind:value={secondCurrency.name}
@@ -75,12 +73,11 @@
             {/each}
         </select>
         <input type="number" bind:value={secondCurrency.value}
-               on:change={() => {
+               on:input={() => {
                    changeFirstCurrencyData()
                }
                }
         />
-        <p>{secondCurrency.value}</p>
     </div>
 {/await}
 
