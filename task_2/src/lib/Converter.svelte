@@ -7,7 +7,7 @@
         value: number | undefined;
     }
 
-    let firstCurrency: Currency = {name: 'ALL', value: 1};
+    let firstCurrency: Currency = {name: 'USD', value: 1};
     let secondCurrency: Currency = {name: 'RUB', value: 99.92481};
     let coef;
 
@@ -39,7 +39,11 @@
         {:then rrr}
         <div>
             <select bind:value={firstCurrency.name}
-                    on:change={() => {getRates()}}>
+                    on:change={() => {getRates().then(() => {
+                       firstCurrency.value = secondCurrency.value / coef;
+                       firstCurrency = firstCurrency;
+                    })}}
+            >
                 {#each Currencies as currency}
                     <option>{currency}</option>
                 {/each}
@@ -54,12 +58,18 @@
             <p>{firstCurrency.value}</p>
         </div>
         <div>
-            <select bind:value={secondCurrency.name} on:change={getRates()}>
+            <select bind:value={secondCurrency.name}
+                    on:change={() => {getRates().then(() => {
+                       secondCurrency.value = firstCurrency.value * coef;
+                       secondCurrency = secondCurrency;
+                    })}}
+            >
                 {#each Currencies as currency}
                     <option>{currency}</option>
                 {/each}
             </select>
-            <input type="number" bind:value={secondCurrency.value} on:change={() => {
+            <input type="number" bind:value={secondCurrency.value}
+                   on:change={() => {
                        firstCurrency.value = secondCurrency.value / coef;
                        firstCurrency = firstCurrency;
                    }
