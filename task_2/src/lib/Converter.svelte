@@ -1,6 +1,6 @@
 <script lang="ts">
     import {BASE_URL, Currencies} from "../environment.ts";
-    import {beforeUpdate, onMount} from "svelte";
+    import {onMount} from "svelte";
 
     type Currency = {
         name: string;
@@ -8,7 +8,7 @@
     }
 
     let firstCurrency: Currency = {name: 'USD', value: 1};
-    let secondCurrency: Currency = {name: 'RUB', value: 99.92481};
+    let secondCurrency: Currency = {name: 'RUB', value: undefined};
     let coef;
 
     let promise;
@@ -26,58 +26,63 @@
         }
     }
 
+    function changeFirstCurrencyData(){
+        firstCurrency.value = secondCurrency.value / coef;
+        firstCurrency = firstCurrency;
+    }
 
+    function changeSecondCurrencyData(){
+        secondCurrency.value = firstCurrency.value * coef;
+        secondCurrency = secondCurrency;
+    }
 
     onMount(() => {
-        promise = getRates()
-    })
+        promise = getRates().then(() => {
+            changeSecondCurrencyData()
+    })})
 </script>
 
 
-    {#await promise}
-        <p>loading...</p>
-        {:then rrr}
-        <div>
-            <select bind:value={firstCurrency.name}
-                    on:change={() => {getRates().then(() => {
-                       firstCurrency.value = secondCurrency.value / coef;
-                       firstCurrency = firstCurrency;
-                    })}}
-            >
-                {#each Currencies as currency}
-                    <option>{currency}</option>
-                {/each}
-            </select>
-            <input type="number" bind:value={firstCurrency.value}
-                   on:change={() => {
-                       secondCurrency.value = firstCurrency.value * coef;
-                       secondCurrency = secondCurrency;
-                   }
-                   }
-            />
-            <p>{firstCurrency.value}</p>
-        </div>
-        <div>
-            <select bind:value={secondCurrency.name}
-                    on:change={() => {getRates().then(() => {
-                       secondCurrency.value = firstCurrency.value * coef;
-                       secondCurrency = secondCurrency;
-                    })}}
-            >
-                {#each Currencies as currency}
-                    <option>{currency}</option>
-                {/each}
-            </select>
-            <input type="number" bind:value={secondCurrency.value}
-                   on:change={() => {
-                       firstCurrency.value = secondCurrency.value / coef;
-                       firstCurrency = firstCurrency;
-                   }
-                   }
-            />
-            <p>{secondCurrency.value}</p>
-        </div>
-    {/await}
+{#await promise}
+    <p>loading...</p>
+    {:then response}
+    <div>
+        <select bind:value={firstCurrency.name}
+                on:change={() => {getRates().then(() => {
+                   changeFirstCurrencyData()
+                })}}
+        >
+            {#each Currencies as currency}
+                <option>{currency}</option>
+            {/each}
+        </select>
+        <input type="number" bind:value={firstCurrency.value}
+               on:change={() => {
+                   changeSecondCurrencyData()
+               }
+               }
+        />
+        <p>{firstCurrency.value}</p>
+    </div>
+    <div>
+        <select bind:value={secondCurrency.name}
+                on:change={() => {getRates().then(() => {
+                   changeSecondCurrencyData()
+                })}}
+        >
+            {#each Currencies as currency}
+                <option>{currency}</option>
+            {/each}
+        </select>
+        <input type="number" bind:value={secondCurrency.value}
+               on:change={() => {
+                   changeFirstCurrencyData()
+               }
+               }
+        />
+        <p>{secondCurrency.value}</p>
+    </div>
+{/await}
 
 
 
