@@ -35,6 +35,18 @@
         secondCurrency = secondCurrency;
     }
 
+    function onFirstCurrencyChange() {
+        promise = getRates().then(() => {
+            changeFirstCurrencyData()
+        })
+    }
+
+    function onSecondCurrencyChange() {
+        promise = getRates().then(() => {
+            changeSecondCurrencyData()
+        })
+    }
+
     onMount(() => {
         promise = getRates().then(() => {
             changeSecondCurrencyData()
@@ -47,9 +59,7 @@
     {:then response}
     <div>
         <select bind:value={firstCurrency.name}
-                on:change={() => {getRates().then(() => {
-                   changeFirstCurrencyData()
-                })}}
+                on:change={() => {onFirstCurrencyChange()}}
         >
             {#each Currencies as currency}
                 <option>{currency}</option>
@@ -64,9 +74,7 @@
     </div>
     <div>
         <select bind:value={secondCurrency.name}
-                on:change={() => {getRates().then(() => {
-                   changeSecondCurrencyData()
-                })}}
+                on:change={() => {onSecondCurrencyChange()}}
         >
             {#each Currencies as currency}
                 <option>{currency}</option>
