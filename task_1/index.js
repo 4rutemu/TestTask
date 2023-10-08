@@ -2,7 +2,7 @@ import {encoded, translations} from './data.js'
 
 function decodeArrayOfObjects(encoded, translations) {
     const decoded = [];
-
+    const uniqueCodes = new Set();
     function decodeObject(obj) {
         const keysToSkip = ['groupId', 'service', 'formatSize', 'ca'];
         const decodedObject = {};
@@ -14,8 +14,10 @@ function decodeArrayOfObjects(encoded, translations) {
             if (obj[key]){
                 if (typeof translations[value] !== 'undefined')
                     decodedObject[key] = translations[value];
-                else
+                else {
+                    uniqueCodes.add(value);
                     decodedObject[key] = null;
+                }
             }
         }
 
@@ -26,6 +28,7 @@ function decodeArrayOfObjects(encoded, translations) {
         decoded.push(decodeObject(obj));
     }
 
+    console.log(`Id не найденные в translations: ${new Array(...uniqueCodes).join(', ')}\n(Такие id заменены на null)`)
     return decoded;
 }
 
@@ -33,3 +36,4 @@ console.log("Let's rock")
 console.log(encoded, translations)
 
 console.log(decodeArrayOfObjects(encoded, translations))
+
